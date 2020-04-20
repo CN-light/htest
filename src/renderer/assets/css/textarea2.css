@@ -1,0 +1,6 @@
+/* textarea的一种样式，展示文件内容时使用 */
+/deep/ .el-textarea__inner {
+    background-color: #1e1e1e;
+    border: 0;
+    color: #cccccc;
+}

@@ -1,0 +1,149 @@
+{
+  "id": "1747591",
+  "name": "my-icon",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon",
+  "description": "常用tu'biao",
+  "glyphs": [
+    {
+      "icon_id": "11525269",
+      "name": "restart",
+      "font_class": "restart",
+      "unicode": "e674",
+      "unicode_decimal": 58996
+    },
+    {
+      "icon_id": "8327173",
+      "name": "email",
+      "font_class": "email1",
+      "unicode": "e607",
+      "unicode_decimal": 58887
+    },
+    {
+      "icon_id": "10564310",
+      "name": "folder-new",
+      "font_class": "folder-new",
+      "unicode": "e70f",
+      "unicode_decimal": 59151
+    },
+    {
+      "icon_id": "128679",
+      "name": "folder",
+      "font_class": "folder",
+      "unicode": "e693",
+      "unicode_decimal": 59027
+    },
+    {
+      "icon_id": "310635",
+      "name": "bug",
+      "font_class": "bug",
+      "unicode": "e611",
+      "unicode_decimal": 58897
+    },
+    {
+      "icon_id": "484482",
+      "name": "Result",
+      "font_class": "result",
+      "unicode": "e617",
+      "unicode_decimal": 58903
+    },
+    {
+      "icon_id": "491899",
+      "name": "delete",
+      "font_class": "delete",
+      "unicode": "e66b",
+      "unicode_decimal": 58987
+    },
+    {
+      "icon_id": "571269",
+      "name": "查阅日志",
+      "font_class": "chayuerizhi",
+      "unicode": "e661",
+      "unicode_decimal": 58977
+    },
+    {
+      "icon_id": "587086",
+      "name": "save",
+      "font_class": "save",
+      "unicode": "e7e6",
+      "unicode_decimal": 59366
+    },
+    {
+      "icon_id": "587167",
+      "name": "warning-o",
+      "font_class": "warningo",
+      "unicode": "e835",
+      "unicode_decimal": 59445
+    },
+    {
+      "icon_id": "1842095",
+      "name": "file-add",
+      "font_class": "file-add",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "1842162",
+      "name": "stop",
+      "font_class": "stop",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
+      "icon_id": "7436884",
+      "name": "report",
+      "font_class": "report",
+      "unicode": "e620",
+      "unicode_decimal": 58912
+    },
+    {
+      "icon_id": "7872836",
+      "name": "开始",
+      "font_class": "kaishi",
+      "unicode": "e642",
+      "unicode_decimal": 58946
+    },
+    {
+      "icon_id": "7983612",
+      "name": "CPU",
+      "font_class": "xingzhuang",
+      "unicode": "e60c",
+      "unicode_decimal": 58892
+    },
+    {
+      "icon_id": "11200992",
+      "name": "add",
+      "font_class": "add",
+      "unicode": "e62c",
+      "unicode_decimal": 58924
+    },
+    {
+      "icon_id": "11215385",
+      "name": "error",
+      "font_class": "error",
+      "unicode": "e715",
+      "unicode_decimal": 59157
+    },
+    {
+      "icon_id": "11737024",
+      "name": "result",
+      "font_class": "result1",
+      "unicode": "e63a",
+      "unicode_decimal": 58938
+    },
+    {
+      "icon_id": "13074982",
+      "name": "help",
+      "font_class": "help",
+      "unicode": "e615",
+      "unicode_decimal": 58901
+    },
+    {
+      "icon_id": "13519529",
+      "name": "setting",
+      "font_class": "setting",
+      "unicode": "e671",
+      "unicode_decimal": 58993
+    }
+  ]
+}

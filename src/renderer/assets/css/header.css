@@ -1,0 +1,21 @@
+/* header部分样式 */
+
+.div-container {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-self: center;
+}
+
+.header-button {
+    background-color: #3c3c3c !important;
+    height: 100%;
+    border: 0 !important;
+}
+
+.el-button-group {
+    border-right: 1px solid #606266 !important;
+    display: flex !important;
+    justify-content: center !important;
+}

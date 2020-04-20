@@ -1,0 +1,13 @@
+/* 页面container布局样式 */
+
+.all-div {
+    height: 100% !important;
+    border: 0px;
+    width: 100% !important;
+}
+
+.main-aside {
+    height: 92% !important;
+    border: 0px;
+    width: 100% !important;
+}

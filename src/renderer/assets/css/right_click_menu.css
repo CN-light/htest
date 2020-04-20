@@ -1,0 +1,40 @@
+/* 右键弹出菜单的样式 */
+
+.menu__item {
+  padding: 5px 25px 5px 25px;
+  display: block;
+  line-height: 20px;
+  text-align: left;
+  margin: 1px;
+  cursor: default;
+  color: #cccccc;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.menu__item:hover {
+  background-color: #094771;
+  color: #cccccc;
+}
+
+.menu {
+  height: auto;
+  width: 250px;
+  position: absolute;
+  font-size: 14px;
+  text-align: left;
+  border: 1px solid #c1c1c1;
+  background-color: #252526;
+  border: 0;
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, .2), 0 8px 10px 1px rgba(0, 0, 0, .14), 0 3px 14px 2px rgba(0, 0, 0, .12);
+}
+
+.div-op {
+  width: 150px;
+}
+
+.div-key {
+  width: 50px;
+  display: flex;
+  justify-content: flex-end;
+}

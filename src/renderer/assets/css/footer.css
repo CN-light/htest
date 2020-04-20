@@ -1,0 +1,74 @@
+/* footer部分样式 */
+
+.div-container {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-self: flex-end;
+}
+
+.div-left {
+    height: 100%;
+    width: 50%;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.div-right {
+    height: 100%;
+    width: 50%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.div-time {
+    height: 100%;
+    align-items: center;
+    display: flex;
+    justify-content: flex-start;
+    color: #cccccc;
+    margin-left: 2%;
+}
+
+.div-op {
+    height: 100%;
+    width: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.div-op:hover {
+    background-color: #6d636a;
+}
+
+.div-tishi-container {
+    height: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.div-tishi:hover {
+    background-color: #6d636a;
+}
+
+.div-tishi {
+    height: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-right: 5px;
+}
+
+.div-tishi-number {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    color: #cccccc;
+    padding-right: 10%;
+    align-items: center;
+}

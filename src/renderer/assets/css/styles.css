@@ -1,0 +1,24 @@
+.titlebar {
+    color: #cccccc !important;
+    font-family:Arial,Verdana,Sans-serif !important;
+    font-size:76% !important;
+}
+
+.action-menu-item {
+    color: #cccccc !important;
+}
+
+.titlebar .window-controls-container .window-icon {
+    background-color: #858585 !important;
+}
+
+.menubar .menubar-menu-button:not(.disabled):focus, 
+.menubar .menubar-menu-button:not(.disabled).open, 
+.menubar .menubar-menu-button:not(.disabled):hover{
+    background-color: #4b4b4b !important;
+}
+
+.titlebar.windows.inactive{
+    background-color: #2d2d2d!important;
+    
+}
