@@ -2,7 +2,7 @@
   <div class="div-container">
     <div class="div-search">
       <div class="div-options">
-        <el-input v-model="search" placeholder="关键字" class="special-input" />
+        <el-input v-model="search" placeholder="关键字" class="special-input"/>
         <el-button-group>
           <el-tooltip
             class="item"

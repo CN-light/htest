@@ -233,7 +233,7 @@
     overflow-x: hidden;
 }
 
-/* 按钮图标样式 */
+/* 按钮样式 */
 
 .el-button--primary {
     color: rgba(255, 255, 255, 0.4);
@@ -241,6 +241,16 @@
 
 .el-button--primary:hover {
     color: #fff;
+}
+
+.el-button--mini, .el-button--small{
+    background-color: #1e1e1e !important;
+    color: #cccccc;
+    border: 0;
+}
+
+.el-button--mini, .el-button--small:hover{
+    color: #ffffff;
 }
 
 #text-div {
@@ -309,4 +319,26 @@
     font-size: 16px !important;
     fill: currentColor;
     overflow: hidden;
+}
+
+/* confirm样式 */
+.el-message-box{
+    background-color: #3c3c3c;
+    border: 0;
+}
+
+.el-message-box__title{
+    color: #cccccc;
+}
+
+.el-message-box__headerbtn .el-message-box__close{
+    color: #cccccc;
+}
+
+.el-message-box__status.el-icon-warning{
+    color: #cccccc;
+}
+
+.el-message-box__status+.el-message-box__message{
+    color: #cccccc;
 }

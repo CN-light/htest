@@ -32,6 +32,7 @@
                 popper-class="popper-style"
                 style="width: 100%;color: #606266;"
                 :disabled="testplan.mode == 'dingshi' ? false : true"
+                value-format="yyyy-MM-dd"
               ></el-date-picker>
             </el-form-item>
           </el-col>
@@ -44,6 +45,7 @@
                 popper-class="popper-style"
                 style="width: 100%;color: #606266;"
                 :disabled="testplan.mode == 'dingshi' ? false : true"
+                value-format="HH:mm:SS"
               ></el-time-picker>
             </el-form-item>
           </el-col>
@@ -101,7 +103,7 @@ export default {
         date: "",
         time: "",
         log_level: "DEBUG",//默认日志级别
-        others: []
+        others: ["启动前自动保存"]
       },
       rules: {
         name: [{ required: true, message: "请输入名称", trigger: "blur" }]
@@ -120,6 +122,18 @@ export default {
     },
     cancelForm(e){
       this.$emit("submitOrCancel", "0");
+    }
+  },
+  props:["dialogData"],
+  watch:{
+    dialogData(newValue, oldValue){
+      this.name = newValue.name;
+      this.desc = newValue.desc;
+      this.mode = newValue.mode;
+      this.date = newValue.date;
+      this.time = newValue.time;
+      this.log_level = newValue.log_level;
+      this.others = newValue.others;
     }
   }
 };

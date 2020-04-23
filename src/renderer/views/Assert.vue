@@ -38,7 +38,7 @@
         <el-form-item>
           <div class="buttons-div">
             <el-button type="primary" @click="submitForm('assert')" class="form-el-button">确定</el-button>
-            <el-button class="form-el-button">取消</el-button>
+            <el-button class="form-el-button" @click="cancelForm()">取消</el-button>
           </div>
         </el-form-item>
       </div>
@@ -70,12 +70,24 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          alert("submit!");
+          this.$emit("submitOrCancel", "6"+this.assert.name);
         } else {
-          console.log("error submit!!");
           return false;
         }
       });
+    },
+    cancelForm(e){
+      this.$emit("submitOrCancel", "0");
+    }
+  },
+  props:["dialogData"],
+  watch:{
+    dialogData(newValue, oldValue){
+      this.name = newValue.name;
+      this.desc = newValue.desc;
+      this.field = newValue.field;
+      this.rule = newValue.rule;
+      this.failmsg = newValue.failmsg;
     }
   }
 };

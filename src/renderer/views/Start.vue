@@ -19,7 +19,7 @@
             @node-click="leftClick"
             @keydown.ctrl.d.native="handleDelete"
             @keydown.ctrl.e.native="handleEdit"
-            @keydown.ctrl.shift.r.native="handleRename"
+            @keydown.F2.native="handleRename"
           ></el-tree>
         </div>
       </el-aside>
@@ -32,12 +32,12 @@
             :label="item.title"
             :name="item.name"
           >
-            <component :is="item.content"></component>
+            <component :is="item.content" :tabData="tabData"></component>
           </el-tab-pane>
         </el-tabs>
       </el-main>
     </el-container>
-    <el-container v-else>
+    <el-container class="main-aside" v-else>
       <welcome></welcome>
     </el-container>
 
@@ -51,7 +51,12 @@
       v-dialogDrag
       :close-on-click-modal="false"
     >
-      <component :is="dialogForm" ref="dialog" @submitOrCancel="handleSubmitOrCancel"></component>
+      <component
+        :is="dialogForm"
+        ref="dialog"
+        @submitOrCancel="handleSubmitOrCancel"
+        :dialogData="dialogData"
+      ></component>
     </el-dialog>
 
     <el-footer>
@@ -69,6 +74,7 @@
 import "../assets/css/static/element.css";
 import "../assets/css/right_click_menu.css";
 import "../assets/js/directive.js";
+import utils from "../assets/js/fileUtils.js";
 import "../assets/font/iconfont.css";
 
 import rightClickMenu from "../components/RightClickMenu";
@@ -84,6 +90,9 @@ import assert from "../views/Assert";
 import httpRequest from "../views/HttpRequest";
 import vUserGroup from "../views/VUserGroup";
 import welcome from "../views/Welcome";
+
+const ipcRenderer = require("electron").ipcRenderer;
+const { dialog } = require("electron").remote;
 /*树节点id规则
 以i开头对节点类型分类，最高为9，即9种分类
 1：代表测试计划节点
@@ -101,8 +110,6 @@ export default {
     return {
       //树节点的数据
       data: [],
-      //view用来动态显示main区域组件
-      view: "",
       //node用来保存当前右键点击的节点的信息
       node: {},
       //树节点右键菜单是否显示
@@ -111,7 +118,7 @@ export default {
       hasPlan: false,
       //控制树节点右键菜单显示方式
       options: "",
-      //tabs页数据
+      //tab页
       editableTabs: [],
       //当前选中的tab
       editableTabsValue: "",
@@ -121,8 +128,19 @@ export default {
       dialogTitle: "",
       //动态显示对话框表单的内容
       dialogForm: "",
-      //是否选择了执行用户组同一个请求
-      singleRequest: true
+      //保存路径
+      savePath: "",
+      //相关配置数据
+      testPlanData: {},
+      vUserGroupData: [],
+      httpRequestData: [],
+      assertData: [],
+      paraTableData: [],
+      httpManagerData: [],
+      //表单对应数据
+      dialogData: [],
+      //tab页对应数据
+      tabData: []
     };
   },
   components: {
@@ -198,7 +216,11 @@ export default {
           }
           break;
         case "2":
-          this.options = "000100";
+          //一个虚拟用户组下只允许有一个全局的请求参数表和http管理
+          if (vflag && !hflag) this.options = "010100";
+          if (!vflag && hflag) this.options = "001100";
+          if (!vflag && !hflag) this.options = "000100";
+          if (vflag && hflag) this.options = "011100";
           break;
         case "3":
           this.options = "000000";
@@ -269,11 +291,7 @@ export default {
       ++id;
       switch (ev) {
         case "添加虚拟用户组":
-          // 弹出表单
-          this.ejectForm("vUserGroup", "虚拟用户组");
-          if (!this.singleRequest)
-            this.handleAddNodeToTree("2", ev.substring(2));
-          else this.handleAddNodeToTree("7", ev.substring(2));
+          this.ejectForm("vUserGroup", "虚拟用户组", "");
           break;
         case "添加请求参数表":
           this.handleAddNodeToTree("3", ev.substring(2));
@@ -286,14 +304,10 @@ export default {
           this.addTab("4" + id.toString(), "http管理器", "httpManager");
           break;
         case "添加Http请求":
-          // 弹出表单
-          this.ejectForm("httpRequest", "http请求");
-          //在树节点追加节点
-          this.handleAddNodeToTree("5", ev.substring(2));
+          this.ejectForm("httpRequest", "http请求", "");
           break;
         case "设置断言":
-          this.ejectForm("assert", "断言");
-          this.handleAddNodeToTree("6", ev.substring(2));
+          this.ejectForm("assert", "断言", "");
           break;
         case "删除":
           this.handleDelete();
@@ -302,8 +316,7 @@ export default {
           this.handleRename();
           break;
         case "编辑":
-          this.handleEdit();
-          // 根据事件的源头节点来选择打开tabs页或者表单
+          this.handleEdit(this.node);
           break;
         case "查看断言结果":
           // this.$refs.tree.append(t, this.node.id);
@@ -321,7 +334,7 @@ export default {
       });
       this.editableTabsValue = tabName;
     },
-    //删除一个tab页
+    //删除指定tab页
     removeTab(targetName) {
       let tabs = this.editableTabs;
       let activeName = this.editableTabsValue;
@@ -392,10 +405,11 @@ export default {
       }
     },
     //弹出表单
-    ejectForm(type, title) {
+    ejectForm(type, title, dialogData) {
       this.dialogTableVisible = true;
       this.dialogForm = type;
       this.dialogTitle = title;
+      this.dialogData = dialogData;
     },
     //表单提交事件
     handleSubmitOrCancel(ev) {
@@ -414,17 +428,31 @@ export default {
             });
             this.hasPlan = true;
           } else {
-            setTimeout(() => {
-              this.clean();
-              this.dialogTableVisible = false;
-              this.data.push({
-                id: "1" + ++id,
-                label: ev.substring(1),
-                children: []
-              });
-              this.hasPlan = true;
-            }, 1000);
+            this.$confirm("将会关闭当前测试计划, 是否保存?", "提示", {
+              confirmButtonText: "确定",
+              cancelButtonText: "取消",
+              type: "warning",
+              closeOnClickModal: false
+            })
+              .then(() => {
+                //保存当前计划
+                this.handleSave(() => {
+                  this.clean();
+                  this.dialogTableVisible = false;
+                  this.data.push({
+                    id: "1" + ++id,
+                    label: ev.substring(1),
+                    children: []
+                  });
+                  this.hasPlan = true;
+                });
+              })
+              .catch(() => {});
           }
+          break;
+        default:
+          this.dialogTableVisible = false;
+          this.handleAddNodeToTree(op, ev.substring(1));
           break;
       }
       console.log(ev);
@@ -439,16 +467,16 @@ export default {
           this.handleOpen();
           break;
         case "保存":
-          this.handleSave();
+          if (this.hasPlan) this.handleSave();
           break;
         case "启动":
-          this.handleStart();
+          if (this.hasPlan) this.handleStart();
           break;
         case "停止":
-          this.handleStop();
+          if (this.hasPlan) this.handleStop();
           break;
         case "重新启动":
-          this.handleRestart();
+          if (this.hasPlan) this.handleRestart();
           break;
         case "查看结果":
           break;
@@ -463,6 +491,8 @@ export default {
         case "设置":
           break;
         case "帮助":
+          const { shell } = require("electron");
+          shell.openExternal("https://www.baidu.com");
           break;
         default:
           break;
@@ -471,13 +501,18 @@ export default {
     //清空数据
     clean() {
       this.data = [];
+      this.savePath = "";
+      this.node = {};
+      this.editableTabs = [];
+      this.editableTabsValue = "";
     },
     //删除当前选中的树节点
     handleDelete() {
       this.$confirm("删除所选节点？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
+        closeOnClickModal: false
       })
         .then(() => {
           this.$refs.tree.remove(this.node.id);
@@ -492,41 +527,86 @@ export default {
       console.log("重命名");
     },
     //编辑
-    handleEdit() {
-      console.log("编辑");
+    handleEdit(data) {
+      this.openTab(data);
     },
     //新建
     handleCreate() {
-      if (this.hasPlan) {
-        this.$confirm("将会关闭当前测试计划, 是否继续?", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        })
-          .then(() => {
-            this.ejectForm("testPlan", "测试计划");
-          })
-          .catch(() => {});
-      } else {
-        this.ejectForm("testPlan", "测试计划");
-      }
+      this.ejectForm("testPlan", "测试计划");
     },
     //打开
     handleOpen() {
-      console.log("打开");
+      dialog.showOpenDialog(
+        { filters: [{ name: "HTEST", extensions: ["hest"] }] },
+        event => {
+          if (event != undefined) {
+            if (this.hasPlan) {
+              this.$confirm("将会关闭当前测试计划, 是否保存?", "提示", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                type: "warning",
+                closeOnClickModal: false
+              })
+                .then(() => {
+                  //保存当前计划
+                  this.handleSave(() => {
+                    this.clean();
+                    var obj = utils.fileRead(event[0]);
+                    this.data = obj.start.data;
+                    this.hasPlan = true;
+                    id = obj.start.staticId;
+                    this.savePath = event[0];
+                  });
+                })
+                .catch(() => {});
+            } else {
+              var obj = utils.fileRead(event[0]);
+              this.data = obj.start.data;
+              this.hasPlan = true;
+              id = obj.start.staticId;
+            }
+          }
+        }
+      );
     },
     //保存
-    handleSave() {
-      console.log("保存");
+    handleSave(callback) {
+      if (this.savePath == "") {
+        dialog.showSaveDialog(
+          { filters: [{ name: "HTEST", extensions: ["hest"] }] },
+          event => {
+            if (event != undefined) {
+              utils.fileSave("aa", event);
+              this.savePath = event;
+              if (callback) callback();
+            }
+          }
+        );
+      } else {
+        utils.fileSave("aa", this.savePath);
+        if (callback) callback();
+      }
+    },
+    //另存为 
+    handleSaveAs(callback) {
+      dialog.showSaveDialog(
+        { filters: [{ name: "HTEST", extensions: ["hest"] }] },
+        event => {
+          if (event != undefined) {
+            utils.fileSave("aa", event);
+            if (callback) callback();
+          }
+        }
+      );
     },
     //启动
     handleStart() {
       console.log("启动");
     },
-    handleStop(){
+    handleStop() {
       console.log("停止");
     },
-    handleRestart(){
+    handleRestart() {
       console.log("重新启动");
     },
     //向树中追加节点
@@ -542,6 +622,56 @@ export default {
       //展开父节点
       this.$refs.tree.store.nodesMap[this.node.id].expanded = true;
     }
+  },
+  mounted: function() {
+    ipcRenderer.on("main-to-start", (event, arg) => {
+      // 与主进程通信
+      if (!this.dialogTableVisible) {
+        switch (arg) {
+          case "create plan":
+            this.handleCreate();
+            break;
+          case "open plan":
+            this.handleOpen();
+            break;
+          case "save plan":
+            if (this.hasPlan) this.handleSave();
+            break;
+          case "save plan as":
+            if (this.hasPlan) this.handleSaveAs();
+            break;
+          case "view result":
+            console.log(arg);
+            break;
+          case "view respond time":
+            console.log(arg);
+            break;
+          case "view report":
+            console.log(arg);
+            break;
+          case "view server statue":
+            console.log(arg);
+            break;
+          case "view log":
+            console.log(arg);
+            break;
+          case "start test":
+            if (this.hasPlan) this.handleStart();
+            break;
+          case "stop test":
+            if (this.hasPlan) this.handleStop();
+            break;
+          case "restart test":
+            if (this.hasPlan) this.handleRestart();
+            break;
+          case "settings":
+            console.log(arg);
+            break;
+          default:
+            break;
+        }
+      }
+    });
   }
 };
 </script>

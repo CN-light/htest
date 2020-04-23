@@ -30,7 +30,6 @@ export default {
   },
   methods: {
     sendCommand(e) {
-      
       this.$emit("menuOperation", e.target.innerHTML);
     }
   },

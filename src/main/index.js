@@ -1,6 +1,5 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, globalShortcut, webContents, ipcMain } from 'electron'
 import path from 'path'
-import menu from './menu'
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
@@ -27,14 +26,33 @@ function createWindow () {
       //  preload: path.join(__dirname, 'preload.js'),
        nodeIntegration: true
     },
-    frame: isWindows ? false : true, //Remove frame to hide default menu    
-    useContentSize: true
+    frame: isWindows ? false : true, //移除默认菜单  
+    useContentSize: false
   })
 
   mainWindow.loadURL(winURL)
 
+  mainWindow.webContents.closeDevTools()//默认不打开开发者工具
+
   mainWindow.on('closed', () => {
     mainWindow = null
+  })
+
+  // 屏蔽系统某些快捷键并添加自己的事件
+  globalShortcut.register('CommandOrControl+R', () => {
+    mainWindow.webContents.send("main-to-start","start test")
+  })
+
+  globalShortcut.register('Shift+R', () => {
+    mainWindow.webContents.send("main-to-start","stop test") 
+  })
+
+  globalShortcut.register('CommandOrControl+Shift+R', () => {
+    mainWindow.webContents.send("main-to-start","restart test")
+  })
+
+  globalShortcut.register('CommandOrControl+Shift+C', () => {
+    
   })
 }
 
@@ -50,6 +68,13 @@ app.on('activate', () => {
   if (mainWindow === null) {
     createWindow()
   }
+})
+
+app.setName("HTEST")
+
+//主进程作为中转站转发菜单的请求 
+ipcMain.on('menu-to-main', (event, arg) => {
+  event.sender.send('main-to-start', arg)
 })
 
 /**

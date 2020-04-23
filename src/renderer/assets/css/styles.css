@@ -20,5 +20,5 @@
 
 .titlebar.windows.inactive{
     background-color: #2d2d2d!important;
-    
+    color: rgba(255, 255, 255, 0.4) !important;
 }

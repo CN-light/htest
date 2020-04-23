@@ -81,10 +81,12 @@ export default {
       console.log("查看日志");
     },
     sendBug() {
-      console.log("报告bug");
+      const { shell } = require("electron");
+      shell.openExternal("https://www.baidu.com");
     },
     contactAuthor() {
-      console.log("联系作者");
+      const { shell } = require("electron");
+      shell.openExternal("https://www.baidu.com");
     }
   }
 };

@@ -1,16 +1,3 @@
-// http请求，弹出显示
-// 组件：
-// 名称（input）
-// 注释（textarea）
-// 协议（input）
-// 服务器名称或者ip（input)
-// 端口号（input)
-// 方法（select）
-// 路径（input）
-// 内容编码（input）
-// 参数（table)
-// 消息体（textarea）
-// 头部：点选按钮组：
 <template>
   <div class="container">
     <el-form :model="request" :rules="rules" ref="request" label-width="100px">
@@ -93,7 +80,7 @@
         <el-form-item>
           <div class="buttons-div">
             <el-button type="primary" @click="submitForm('request')" class="form-el-button">确定</el-button>
-            <el-button class="form-el-button">取消</el-button>
+            <el-button class="form-el-button" @click="cancelForm()">取消</el-button>
           </div>
         </el-form-item>
       </div>
@@ -129,12 +116,29 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          alert("submit!");
+          this.$emit("submitOrCancel", "5"+this.request.name);
         } else {
-          console.log("error submit!!");
           return false;
         }
       });
+    },
+    cancelForm(e){
+      this.$emit("submitOrCancel", "0");
+    }
+  },
+  props:["dialogData"],
+  watch:{
+    dialogData(newValue, oldValue){
+      this.name = newValue.name;
+      this.desc = newValue.desc;
+      this.ip = newValue.ip;
+      this.protocol = newValue.protocol;
+      this.port = newValue.port;
+      this.path = newValue.path;
+      this.method = newValue.method;
+      this.contentEcoding = newValue.contentEcoding;
+      this.header = newValue.header;
+      this.rdata = newValue.rdata;
     }
   }
 };
