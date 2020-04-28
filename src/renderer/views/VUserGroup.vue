@@ -21,12 +21,12 @@
         <div class="div-inputs">
           <div style="width:33%">
             <el-form-item label="虚拟用户数">
-              <el-input-number v-model="vuser.number" :min="1" style="width:100%"></el-input-number>
+              <el-input-number v-model="vuser.number" :min="1" :max="500" style="width:100%"></el-input-number>
             </el-form-item>
           </div>
           <div style="width:34%">
             <el-form-item label="间隔时间(秒)">
-              <el-input v-model="vuser.intervalTime"></el-input>
+              <el-input-number v-model="vuser.intervalTime" :min="0" style="width:100%"></el-input-number>
             </el-form-item>
           </div>
           <div style="width:33%">
@@ -46,8 +46,6 @@
           <el-option label="出错后停止当前用户组" value="stopnow"></el-option>
           <el-option label="出错后停止全部用户组" value="stopall"></el-option>
           <el-option label="出错后继续执行当前用户组" value="continuenow"></el-option>
-          <el-option label="出错后执行下一个用户组" value="continuenext"></el-option>
-          <el-option label="出错后执行当前用户组下一个循环" value="continuenextloop"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="模式">
@@ -85,8 +83,8 @@ export default {
         name: "",
         desc: "",
         number: "",
-        intervalTime: "5",
-        cycleCount: "5",
+        intervalTime: "",
+        cycleCount: "",
         prefix: "",
         mode: "different",
         region: "stopnow"

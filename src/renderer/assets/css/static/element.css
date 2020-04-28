@@ -73,17 +73,54 @@
 .popper-style {
     background-color: #3c3c3c;
     color: #cccccc;
+    border: 0;
+}
+
+.el-select-dropdown__item{
+    color:#cccccc;
 }
 
 .el-select-dropdown__item.hover {
     background-color: #3c3c3c;
-    color: #cccccc;
+    color: #ffffff;
 }
 
 .el-select-dropdown__item.selected {
     background-color: #3c3c3c;
+    color: #ffffff;
+}
+
+.el-time-spinner__item{
+    color: #cccccc !important;
+}
+
+.el-time-spinner__item.active:not(.disabled){
+    color: #ffffff;
+}
+
+.el-picker-panel__icon-btn{
     color: #cccccc;
 }
+
+.el-date-picker__header-label{
+    color: #cccccc;
+}
+
+.el-date-table th{
+    color: #cccccc;
+}
+
+.el-time-panel__btn{
+    color: #cccccc !important;
+}
+
+.el-time-panel__btn:hover{
+    color: #ffffff !important;
+}
+
+/* .el-time-panel__btn{
+    color: #cccccc !important;
+} */
 
 /* 表格样式 */
 
@@ -194,7 +231,7 @@
 .el-tabs--card>.el-tabs__header .el-tabs__item.is-closable {
     color: #cccccc;
     background-color: #2d2d2d;
-    border: 0;
+    border-left: 1px solid #3c3c3c;
 }
 
 .el-tabs--card>.el-tabs__header .el-tabs__item.is-active.is-closable {
@@ -215,6 +252,13 @@
     height: 34px !important;
     margin-bottom: 0;
     background-color: #252526;
+}
+
+.el-tabs__nav-next, .el-tabs__nav-prev{
+    padding: 0px 3px;
+    font-size: 14px;
+    color: #cccccc;
+    line-height: 34px;
 }
 
 .el-tabs__nav-wrap.is-top {
@@ -244,7 +288,7 @@
 }
 
 .el-button--mini, .el-button--small{
-    background-color: #1e1e1e !important;
+    background-color: #3c3c3c !important;
     color: #cccccc;
     border: 0;
 }
@@ -267,7 +311,7 @@
     background-color: #1e1e1e;
     padding-right: 2%;
     padding-left: 2%;
-    width: 800px;
+    width: 850px;
     height: 588px;
     overflow: hidden;
 }
@@ -323,7 +367,7 @@
 
 /* confirm样式 */
 .el-message-box{
-    background-color: #3c3c3c;
+    background-color: #1e1e1e;
     border: 0;
 }
 

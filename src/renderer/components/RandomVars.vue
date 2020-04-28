@@ -1,9 +1,9 @@
 <template>
   <div class="div-container">
     <div class="div-search">
-      <div class="text-div">请求参数设置</div>
+      <div class="text-div">随机变量</div>
       <div class="div-options">
-        <el-input v-model="search" placeholder="关键字" class="special-input"/>
+        <el-input v-model="search" placeholder="关键字" class="special-input" />
         <el-button-group>
           <el-tooltip
             class="item"
@@ -31,10 +31,7 @@
     </div>
     <div class="div-table">
       <el-table
-        :data="tableData.filter(data => !search 
-      || data.key.toLowerCase().includes(search.toLowerCase()) 
-      || data.value.toLowerCase().includes(search.toLowerCase())
-      || data.ecoding.toLowerCase().includes(search.toLowerCase()))"
+        :data="tableData.filter(data => !search || data.value.toLowerCase().includes(search.toLowerCase()))"
         class="el-table-style"
         border
         :cell-style="setCellStyle"
@@ -42,26 +39,13 @@
         highlight-current-row
         height="500"
         ref="table"
+        :show-header="false"
         @current-change="currentChange"
       >
-        <el-table-column label="名称">
-          <template slot-scope="scope">
-            <div>
-              <el-input size="small" v-model="scope.row.key"></el-input>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column label="值">
+        <el-table-column label="字符串">
           <template slot-scope="scope">
             <div>
               <el-input size="small" v-model="scope.row.value"></el-input>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column label="编码">
-          <template slot-scope="scope">
-            <div>
-              <el-input size="small" v-model="scope.row.ecoding"></el-input>
             </div>
           </template>
         </el-table-column>
@@ -76,21 +60,17 @@
 //设置表格的index
 let staticindex = 1;
 export default {
-  name: "ParaTable",
+  name: "RandomVars",
   tindex: "",
   data() {
     return {
       tableData: [
         {
-          key: "2016-05-02",
-          value: "王小虎",
-          ecoding: "上海市普陀区金沙江路 1518 弄",
+          value: "2016-05-02",
           index: "1"
         },
         {
-          key: "2016-05-04",
-          value: "王小虎",
-          ecoding: "上海市普陀区金沙江路 1517 弄",
+          value: "2016-05-04",
           index: "2"
         }
       ],
@@ -121,9 +101,7 @@ export default {
     //向表中追加一条记录
     addReword() {
       this.tableData.push({
-        key: "",
         value: "",
-        ecoding: "",
         index: ++staticindex
       });
     },
@@ -132,7 +110,7 @@ export default {
       if (val != null) this.tindex = val.index;
     },
     openFile() {
-      console.log("打开写有http请求参数的文件");
+      console.log("打开写有随机变量的文件");
     }
   }
 };

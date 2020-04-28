@@ -82,7 +82,8 @@ import paraTable from "../components/ParaTable";
 import headerButtons from "../components/Header";
 import log from "../components/Log";
 import mainView from "../components/MainView";
-import httpManager from "../components/HttpManager";
+import httpHeader from "../components/HttpHeader";
+import randomVars from "../components/RandomVars";
 import footerButtons from "../components/Footer";
 
 import testPlan from "../views/TestPlan";
@@ -97,11 +98,12 @@ const { dialog } = require("electron").remote;
 以i开头对节点类型分类，最高为9，即9种分类
 1：代表测试计划节点
 2：代表虚拟用户组节点（不同请求）
-7：代表虚拟用户组节点（相同请求）
-3：代表用户自定义变量节点
-4：代表http管理器节点
+3：代表用户请求参数表节点
+4：代表http头部参数表节点
 5：代表http请求节点
 6：代表断言节点
+7：代表虚拟用户组节点（相同请求）
+8：代表随机变量表节点
 同时tab的名字与节点id一致*/
 let id = 100000;
 export default {
@@ -136,7 +138,8 @@ export default {
       httpRequestData: [],
       assertData: [],
       paraTableData: [],
-      httpManagerData: [],
+      httpHeaderData: [],
+      randomVarsData: [],
       //表单对应数据
       dialogData: [],
       //tab页对应数据
@@ -153,7 +156,8 @@ export default {
     headerButtons,
     log,
     mainView,
-    httpManager,
+    httpHeader,
+    randomVars,
     footerButtons,
     welcome
   },
@@ -185,51 +189,45 @@ export default {
           break;
         }
       }
+
       //控制右键菜单的显示
       switch (event.id.charAt(0)) {
         case "1":
-          //一个测试计划只允许有一个全局的请求参数表和http管理
-          if (vflag && !hflag) this.options = "110000";
-          if (!vflag && hflag) this.options = "101000";
-          if (!vflag && !hflag) this.options = "100000";
-          if (vflag && hflag) this.options = "111000";
-          break;
-        case "7":
-          //选择了执行同一请求的用户组只能添加一个http请求并且一个虚拟用户组只允许一个参数表和http管理器
-          let rflag = true;
+          //一个测试计划只允许有一个全局的请求参数表、一个http头部参数表和一个随机变量表
+          let randomflag = true;
           for (let i = 0; i < this.node.children.length; i++) {
-            if (this.node.children[i].id.charAt(0) == "5") {
-              rflag = false;
+            if (this.node.children[i].id.charAt(0) == "8") {
+              randomflag = false;
               break;
             }
           }
-          if (!rflag) {
-            if (vflag && !hflag) this.options = "010000";
-            if (!vflag && hflag) this.options = "001000";
-            if (!vflag && !hflag) this.options = "000000";
-            if (vflag && hflag) this.options = "011000";
+          if (!randomflag) {
+            if (vflag && !hflag) this.options = "1100000";
+            if (!vflag && hflag) this.options = "1010000";
+            if (!vflag && !hflag) this.options = "1000000";
+            if (vflag && hflag) this.options = "1110000";
           } else {
-            if (vflag && !hflag) this.options = "010100";
-            if (!vflag && hflag) this.options = "001100";
-            if (!vflag && !hflag) this.options = "000100";
-            if (vflag && hflag) this.options = "011100";
+            if (vflag && !hflag) this.options = "1101000";
+            if (!vflag && hflag) this.options = "1011000";
+            if (!vflag && !hflag) this.options = "1001000";
+            if (vflag && hflag) this.options = "1111000";
           }
           break;
         case "2":
-          //一个虚拟用户组下只允许有一个全局的请求参数表和http管理
-          if (vflag && !hflag) this.options = "010100";
-          if (!vflag && hflag) this.options = "001100";
-          if (!vflag && !hflag) this.options = "000100";
-          if (vflag && hflag) this.options = "011100";
+          //一个虚拟用户组下只允许有一个全局的请求参数表和http头部参数表
+          if (vflag && !hflag) this.options = "0100100";
+          if (!vflag && hflag) this.options = "0010100";
+          if (!vflag && !hflag) this.options = "0000100";
+          if (vflag && hflag) this.options = "0110100";
           break;
         case "3":
-          this.options = "000000";
+          this.options = "0000000";
           break;
         case "4":
-          this.options = "000000";
+          this.options = "0000000";
           break;
         case "5":
-          //一个http请求只允许添加一个参数表和管理器并且只允许设置一个断言
+          //一个http请求只允许添加一个请求参数表和头部参数表并且只允许设置一个断言
           let aflag = true;
           for (let i = 0; i < this.node.children.length; i++) {
             if (this.node.children[i].id.charAt(0) == "6") {
@@ -238,19 +236,44 @@ export default {
             }
           }
           if (!aflag) {
-            if (vflag && !hflag) this.options = "010000";
-            if (!vflag && hflag) this.options = "001000";
-            if (!vflag && !hflag) this.options = "000000";
-            if (vflag && hflag) this.options = "011000";
+            if (vflag && !hflag) this.options = "0100000";
+            if (!vflag && hflag) this.options = "0010000";
+            if (!vflag && !hflag) this.options = "0000000";
+            if (vflag && hflag) this.options = "0110000";
           } else {
-            if (vflag && !hflag) this.options = "010010";
-            if (!vflag && hflag) this.options = "001010";
-            if (!vflag && !hflag) this.options = "000010";
-            if (vflag && hflag) this.options = "011010";
+            if (vflag && !hflag) this.options = "0100010";
+            if (!vflag && hflag) this.options = "0010010";
+            if (!vflag && !hflag) this.options = "0000010";
+            if (vflag && hflag) this.options = "0110010";
           }
           break;
         case "6":
-          this.options = "000001";
+          this.options = "0000001";
+          break;
+        case "7":
+          //选择了执行同一请求的用户组只能添加一个http请求并且一个虚拟用户组只允许一个参数表和http头部参数表
+          let rflag = true;
+          for (let i = 0; i < this.node.children.length; i++) {
+            if (this.node.children[i].id.charAt(0) == "5") {
+              rflag = false;
+              break;
+            }
+          }
+          if (!rflag) {
+            if (vflag && !hflag) this.options = "0100000";
+            if (!vflag && hflag) this.options = "0010000";
+            if (!vflag && !hflag) this.options = "0000000";
+            if (vflag && hflag) this.options = "0110000";
+          } else {
+            if (vflag && !hflag) this.options = "0100100";
+            if (!vflag && hflag) this.options = "0010100";
+            if (!vflag && !hflag) this.options = "0000100";
+            if (vflag && hflag) this.options = "0110100";
+          }
+          break;
+        case "8":
+          this.options = "0000000";
+          break;
           break;
         default:
           break;
@@ -289,6 +312,7 @@ export default {
     //右键菜单的操作的事件
     handleMenuOperation(ev) {
       ++id;
+      var prifix = (this.node.id.substring(0,1) == "1" ? "" : (this.node.label+"的"));
       switch (ev) {
         case "添加虚拟用户组":
           this.ejectForm("vUserGroup", "虚拟用户组", "");
@@ -296,12 +320,17 @@ export default {
         case "添加请求参数表":
           this.handleAddNodeToTree("3", ev.substring(2));
           // 在tabs中追加一页并打开
-          this.addTab("3" + id.toString(), "请求参数", "paraTable");
+          this.addTab("3" + id.toString(), prifix+"请求参数", "paraTable");
           break;
-        case "添加Http管理器":
+        case "添加Http头部参数表":
           this.handleAddNodeToTree("4", ev.substring(2));
           // 在tabs中追加一页并打开
-          this.addTab("4" + id.toString(), "http管理器", "httpManager");
+          this.addTab("4" + id.toString(), prifix+"Http头部参数", "httpHeader");
+          break;
+        case "添加随机变量表":
+          this.handleAddNodeToTree("8", ev.substring(2));
+          // 在tabs中追加一页并打开
+          this.addTab("8" + id.toString(), "随机变量", "randomVars");
           break;
         case "添加Http请求":
           this.ejectForm("httpRequest", "http请求", "");
@@ -391,13 +420,16 @@ export default {
             ttitle = ndata.label;
             break;
           case "4":
-            tcontent = "httpManager";
+            tcontent = "httpHeader";
             ttitle = ndata.label;
             break;
           case "6":
             break;
           case "7":
             break;
+          case "8":
+            tcontent = "randomVars";
+            ttitle = ndata.label;
           default:
             break;
         }
@@ -448,6 +480,32 @@ export default {
                 });
               })
               .catch(() => {});
+          }
+          break;
+        case "5":
+          this.dialogTableVisible = false;
+          this.handleAddNodeToTree(op, ev.substring(2));
+          if (ev.substring(1, 2) == "1") {
+            // 判断是否存在随机变量表
+            let randomflag = true;
+            for (let i = 0; i < this.data[0].children.length; i++) {
+              if (this.data[0].children[i].id.charAt(0) == "8") {
+                randomflag = false;
+                break;
+              }
+            }
+            if (randomflag) {
+              // 不存在则需要添加到根节点
+              ++id;
+              var t = {
+                id: "8" + id.toString(),
+                label: "随机变量表",
+                children: []
+              };
+              this.$refs.tree.append(t, this.data[0].id);
+              // 在tabs中追加一页并打开
+              this.addTab("8" + id.toString(), "随机变量", "randomVars");
+            }
           }
           break;
         default:
@@ -587,7 +645,7 @@ export default {
         if (callback) callback();
       }
     },
-    //另存为 
+    //另存为
     handleSaveAs(callback) {
       dialog.showSaveDialog(
         { filters: [{ name: "HTEST", extensions: ["hest"] }] },

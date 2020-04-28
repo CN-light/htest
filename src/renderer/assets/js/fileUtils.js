@@ -15,7 +15,7 @@ const fileUtils = {
 
     },
     // 检查写有cookie信息的文件是否符合要求
-    cookieFileCheck: function (fileText) {
+    randomFileCheck: function (fileText) {
 
     },
     // 将指定信息保存到指定文件

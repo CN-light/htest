@@ -15,14 +15,14 @@
       <div class="el-form-item-class">
         <el-form-item label="执行方式">
           <el-select v-model="testplan.mode" placeholder="执行方式" popper-class="popper-style">
-            <el-option label="独立执行每个用户组" value="duli"></el-option>
-            <el-option label="顺序执行全部用户组" value="shunxu"></el-option>
-            <el-option label="定时执行全部用户组" value="dingshi"></el-option>
+            <el-option label="加压执行" value="jiaya"></el-option>
+            <el-option label="顺序执行" value="shunxu"></el-option>
+            <el-option label="定时执行" value="dingshi"></el-option>
           </el-select>
         </el-form-item>
       </div>
-      <div class="el-form-item-class">
-        <el-form-item label="定时开始时间" >
+      <div class="el-form-item-class" v-show="testplan.mode == 'dingshi' ? true : false">
+        <el-form-item label="定时开始时间">
           <el-col :span="11">
             <el-form-item>
               <el-date-picker
@@ -31,7 +31,6 @@
                 v-model="testplan.date"
                 popper-class="popper-style"
                 style="width: 100%;color: #606266;"
-                :disabled="testplan.mode == 'dingshi' ? false : true"
                 value-format="yyyy-MM-dd"
               ></el-date-picker>
             </el-form-item>
@@ -44,7 +43,6 @@
                 v-model="testplan.time"
                 popper-class="popper-style"
                 style="width: 100%;color: #606266;"
-                :disabled="testplan.mode == 'dingshi' ? false : true"
                 value-format="HH:mm:SS"
               ></el-time-picker>
             </el-form-item>
