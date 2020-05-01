@@ -17,7 +17,7 @@
           <el-select v-model="assert.field" placeholder="测试字段" popper-class="popper-style">
             <el-option label="响应状态" value="status"></el-option>
             <el-option label="响应头" value="header"></el-option>
-            <el-option label="响应正文" value="maintext"></el-option>
+            <el-option label="响应正文" value="body"></el-option>
           </el-select>
         </el-form-item>
         <div class="el-form-item-class">
@@ -70,7 +70,7 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          this.$emit("submitOrCancel", "6"+this.assert.name);
+          this.$emit("submitOrCancel", "6"+JSON.stringify(this.assert));
         } else {
           return false;
         }

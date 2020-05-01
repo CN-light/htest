@@ -32,7 +32,7 @@
             :label="item.title"
             :name="item.name"
           >
-            <component :is="item.content" :tabData="tabData"></component>
+            <component :is="item.content" :tabData="tabData" @updateTableData="handleUpdateTableData"></component>
           </el-tab-pane>
         </el-tabs>
       </el-main>
@@ -132,18 +132,24 @@ export default {
       dialogForm: "",
       //保存路径
       savePath: "",
-      //相关配置数据
-      testPlanData: {},
-      vUserGroupData: [],
-      httpRequestData: [],
-      assertData: [],
-      paraTableData: [],
-      httpHeaderData: [],
-      randomVarsData: [],
-      //表单对应数据
-      dialogData: [],
-      //tab页对应数据
-      tabData: []
+
+      //主界面传递给表单的数据
+      dialogData: "",
+      //主界面传递给tab页的数据
+      tabData: "",
+
+      // 要写入文件的数据
+      fileData: {
+        settings: {},
+        testPlan: {},
+        vUserGroupData: [],
+        httpRequest: [],
+        assert: [],
+        paraTable: [],
+        httpHeader: [],
+        randomVars: [],
+        start: {}
+      }
     };
   },
   components: {
@@ -312,23 +318,32 @@ export default {
     //右键菜单的操作的事件
     handleMenuOperation(ev) {
       ++id;
-      var prifix = (this.node.id.substring(0,1) == "1" ? "" : (this.node.label+"的"));
+      var prifix =
+        this.node.id.substring(0, 1) == "1" ? "" : this.node.label + "的";
+      var ttid = undefined;
       switch (ev) {
         case "添加虚拟用户组":
           this.ejectForm("vUserGroup", "虚拟用户组", "");
           break;
         case "添加请求参数表":
-          this.handleAddNodeToTree("3", ev.substring(2));
+          ttid = this.handleAddNodeToTree("3", ev.substring(2));
+          this.fileData.paraTable.push({id:ttid,tabData:[]});
           // 在tabs中追加一页并打开
-          this.addTab("3" + id.toString(), prifix+"请求参数", "paraTable");
+          this.addTab("3" + id.toString(), prifix + "请求参数", "paraTable");
           break;
         case "添加Http头部参数表":
-          this.handleAddNodeToTree("4", ev.substring(2));
+          ttid = this.handleAddNodeToTree("4", ev.substring(2));
+          this.fileData.httpHeader.push({id:ttid,tabData:[]});
           // 在tabs中追加一页并打开
-          this.addTab("4" + id.toString(), prifix+"Http头部参数", "httpHeader");
+          this.addTab(
+            "4" + id.toString(),
+            prifix + "Http头部参数",
+            "httpHeader"
+          );
           break;
         case "添加随机变量表":
-          this.handleAddNodeToTree("8", ev.substring(2));
+          ttid = this.handleAddNodeToTree("8", ev.substring(2));
+          this.fileData.randomVars = {id:ttid,tabData:[]};
           // 在tabs中追加一页并打开
           this.addTab("8" + id.toString(), "随机变量", "randomVars");
           break;
@@ -446,6 +461,12 @@ export default {
     //表单提交事件
     handleSubmitOrCancel(ev) {
       let op = ev.substring(0, 1);
+      let value = ev.substring(1);
+      let vjson = undefined;
+      let ttid = undefined;
+      if (op != "0") {
+        vjson = JSON.parse(value);
+      }
       switch (op) {
         case "0":
           this.dialogTableVisible = false;
@@ -453,39 +474,33 @@ export default {
         case "1":
           if (!this.hasPlan) {
             this.dialogTableVisible = false;
-            this.data.push({
-              id: "1" + ++id,
-              label: ev.substring(1),
-              children: []
-            });
+            this.data.push({ id: "1" + ++id, label: vjson.name, children: [] });
+            this.fileData.testPlan = this.jsonAddId(vjson, "1" + id);
             this.hasPlan = true;
           } else {
-            this.$confirm("将会关闭当前测试计划, 是否保存?", "提示", {
-              confirmButtonText: "确定",
-              cancelButtonText: "取消",
-              type: "warning",
-              closeOnClickModal: false
-            })
-              .then(() => {
-                //保存当前计划
-                this.handleSave(() => {
-                  this.clean();
-                  this.dialogTableVisible = false;
-                  this.data.push({
-                    id: "1" + ++id,
-                    label: ev.substring(1),
-                    children: []
-                  });
-                  this.hasPlan = true;
-                });
-              })
-              .catch(() => {});
+            this.handlePlanSave(() => {
+              this.clean();
+              this.dialogTableVisible = false;
+              this.data.push({
+                id: "1" + ++id,
+                label: vjson.name,
+                children: []
+              });
+              this.fileData.testPlan = this.jsonAddId(vjson, "1" + id);
+              this.hasPlan = true;
+            });
           }
+          break;
+        case "2":
+          this.dialogTableVisible = false;
+          ttid = this.handleAddNodeToTree(op, vjson.name);
+          this.fileData.vUserGroupData.push(this.jsonAddId(vjson,ttid));
           break;
         case "5":
           this.dialogTableVisible = false;
-          this.handleAddNodeToTree(op, ev.substring(2));
-          if (ev.substring(1, 2) == "1") {
+          ttid = this.handleAddNodeToTree(op, vjson.name);
+          this.fileData.httpRequest.push(this.jsonAddId(vjson,ttid));
+          if (vjson.random == "use") {
             // 判断是否存在随机变量表
             let randomflag = true;
             for (let i = 0; i < this.data[0].children.length; i++) {
@@ -497,22 +512,31 @@ export default {
             if (randomflag) {
               // 不存在则需要添加到根节点
               ++id;
-              var t = {
-                id: "8" + id.toString(),
-                label: "随机变量表",
-                children: []
-              };
-              this.$refs.tree.append(t, this.data[0].id);
+              this.$refs.tree.append(
+                { id: "8" + id, label: "随机变量表", children: [] },
+                this.data[0].id
+              );
               // 在tabs中追加一页并打开
-              this.addTab("8" + id.toString(), "随机变量", "randomVars");
+              this.addTab("8" + id, "随机变量", "randomVars");
             }
           }
           break;
-        default:
+        case "6":
           this.dialogTableVisible = false;
-          this.handleAddNodeToTree(op, ev.substring(1));
+          ttid = this.handleAddNodeToTree(op, vjson.name);
+          this.fileData.assert.push(this.jsonAddId(vjson, ttid));
+          break;
+        case "7":
+          this.dialogTableVisible = false;
+          ttid = this.handleAddNodeToTree(op, vjson.name);
+          this.fileData.vUserGroupData.push(this.jsonAddId(vjson, ttid));
+          break;
+        default:
           break;
       }
+    },
+    //表格数据更新
+    handleUpdateTableData(ev){
       console.log(ev);
     },
     //按钮组点击事件
@@ -564,6 +588,11 @@ export default {
       this.editableTabs = [];
       this.editableTabsValue = "";
     },
+    // json字符串中添加id
+    jsonAddId(json, id){
+      json.id = id;
+      return json;
+    },
     //删除当前选中的树节点
     handleDelete() {
       this.$confirm("删除所选节点？", "提示", {
@@ -599,29 +628,27 @@ export default {
         event => {
           if (event != undefined) {
             if (this.hasPlan) {
-              this.$confirm("将会关闭当前测试计划, 是否保存?", "提示", {
-                confirmButtonText: "确定",
-                cancelButtonText: "取消",
-                type: "warning",
-                closeOnClickModal: false
-              })
-                .then(() => {
-                  //保存当前计划
-                  this.handleSave(() => {
-                    this.clean();
-                    var obj = utils.fileRead(event[0]);
-                    this.data = obj.start.data;
-                    this.hasPlan = true;
-                    id = obj.start.staticId;
-                    this.savePath = event[0];
+              this.handlePlanSave(() => {
+                var obj = utils.fileRead(event[0]);
+                if (obj == undefined) {
+                  this.$alert("文件内容损坏，无法识别", "错误", {
+                    confirmButtonText: "确定"
                   });
-                })
-                .catch(() => {});
+                } else {
+                  this.clean();
+                  this.handleAssign(obj);
+                  this.savePath = event[0];
+                }
+              });
             } else {
               var obj = utils.fileRead(event[0]);
-              this.data = obj.start.data;
-              this.hasPlan = true;
-              id = obj.start.staticId;
+              if (obj == undefined) {
+                this.$alert("文件内容损坏，无法识别", "错误", {
+                  confirmButtonText: "确定"
+                });
+              } else {
+                this.handleAssign(obj);
+              }
             }
           }
         }
@@ -634,8 +661,8 @@ export default {
           { filters: [{ name: "HTEST", extensions: ["hest"] }] },
           event => {
             if (event != undefined) {
-              utils.fileSave("aa", event);
               this.savePath = event;
+              utils.fileSave("aa", event);
               if (callback) callback();
             }
           }
@@ -646,26 +673,68 @@ export default {
       }
     },
     //另存为
-    handleSaveAs(callback) {
+    handleSaveAs() {
       dialog.showSaveDialog(
         { filters: [{ name: "HTEST", extensions: ["hest"] }] },
         event => {
           if (event != undefined) {
             utils.fileSave("aa", event);
-            if (callback) callback();
           }
         }
       );
     },
     //启动
     handleStart() {
-      console.log("启动");
+      const { spawn } = require("child_process");
+      var path;
+      if (process.env.NODE_ENV !== "development") {
+        path = require("path")
+          .join(__static, "/java/client.jar")
+          .replace(/\\/g, "\\\\");
+        console.log(path);
+      } else {
+        path = require("path").join(__static, "/java/client.jar");
+        console.log(path);
+      }
+      const bat = spawn("cmd.exe", ["/c", "java -jar " + path]);
+
+      bat.stdout.on("data", data => {
+        console.log("stdout:" + data.toString());
+      });
+
+      bat.stderr.on("data", data => {
+        console.error(data.toString());
+      });
     },
+    // 停止
     handleStop() {
       console.log("停止");
     },
+    // 重新启动
     handleRestart() {
       console.log("重新启动");
+    },
+    // 赋值
+    handleAssign(obj) {
+      this.data = obj.start.data;
+      this.hasPlan = true;
+      id = obj.start.staticId;
+    },
+    handlePlanSave(fun) {
+      this.$confirm("将会关闭当前测试计划, 是否保存?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+        closeOnClickModal: false
+      })
+        .then(() => {
+          this.handleSave(() => {
+            fun();
+          });
+        })
+        .catch(() => {
+          fun();
+        });
     },
     //向树中追加节点
     handleAddNodeToTree(type, label) {
@@ -679,6 +748,7 @@ export default {
       this.$refs.tree.append(t, this.node.id);
       //展开父节点
       this.$refs.tree.store.nodesMap[this.node.id].expanded = true;
+      return t.id;
     }
   },
   mounted: function() {

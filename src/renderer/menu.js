@@ -62,7 +62,10 @@ const template = [
   {
     label: "运行(&R)",
     submenu: [
-      { label: "启动测试", click: () => { ipcRenderer.send("menu-to-main", "start test") }, accelerator: "CmdOrCtrl+R" },
+      {
+        label: "启动测试", click: () => {ipcRenderer.send("menu-to-main", "start test") 
+        }, accelerator: "CmdOrCtrl+R"
+      },
       { label: "停止测试", click: () => { ipcRenderer.send("menu-to-main", "stop test") }, accelerator: "CmdOrShift+R" },
       { label: "重启测试", click: () => { ipcRenderer.send("menu-to-main", "restart test") }, accelerator: "CmdOrShift+Ctrl+R" },
       { type: "separator" },
@@ -111,37 +114,7 @@ const template = [
       },
       {
         label: "设置",
-        click: () => {
-          
-          const { spawn } = require('child_process');
-          const bat = spawn("cmd.exe", ['/c', 'D:\\Projects\\VSProjects\\htest\\src\\renderer\\java\\a.cmd']);
-
-          bat.stdout.on('data', (data) => {
-            console.log(data.toString());
-          });
-
-          bat.stderr.on('data', (data) => {
-            console.error(data.toString());
-          });
-
-          bat.on('exit', (code) => {
-            console.log(`子进程退出，退出码 ${code}`);
-          });
-          // const ls = spawn("java",["-version"]);
-
-          // ls.stdout.on('data', (data) => {
-          //   console.log("stdout:"+data);
-          // });
-
-          // ls.stderr.on('data', (data) => {
-          //   console.log("stderr:"+data);
-          // });
-
-          // ls.on('close', (code) => {
-          //   console.log(`子进程退出，使用退出码 ${code}`);
-          // });
-          // ipcRenderer.send("menu-to-main", "settings");
-        }
+        click: () => { ipcRenderer.send("menu-to-main", "settings")}
       },
       {
         type: "separator"

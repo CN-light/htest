@@ -19,6 +19,7 @@
   "build": {
     "productName": "htest",
     "appId": "com.htest",
+    "asar": false,
     "directories": {
       "output": "build"
     },

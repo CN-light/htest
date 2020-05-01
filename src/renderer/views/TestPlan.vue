@@ -51,18 +51,29 @@
       </div>
       <div class="el-form-item-class">
         <el-form-item label="日志级别">
-          <el-select v-model="testplan.log_level" placeholder="日志级别" popper-class="popper-style">
-            <el-option label="ALL" value="01"></el-option>
-            <el-option label="TRACE" value="02"></el-option>
-            <el-option label="DEBUG" value="03"></el-option>
-            <el-option label="INFO" value="04"></el-option>
-            <el-option label="WARN" value="05"></el-option>
-            <el-option label="ERROR" value="06"></el-option>
-            <el-option label="FATAL" value="07"></el-option>
-            <el-option label="OFF" value="08"></el-option>
+          <el-select v-model="testplan.logLevel" placeholder="日志级别" popper-class="popper-style">
+            <el-option label="ALL" value="ALL"></el-option>
+            <el-option label="TRACE" value="TRACE"></el-option>
+            <el-option label="DEBUG" value="DEBUG"></el-option>
+            <el-option label="INFO" value="INFO"></el-option>
+            <el-option label="WARN" value="WARN"></el-option>
+            <el-option label="ERROR" value="ERROR"></el-option>
+            <el-option label="FATAL" value="FATAL"></el-option>
+            <el-option label="OFF" value="OFF"></el-option>
           </el-select>
         </el-form-item>
       </div>
+      <el-form-item label="执行策略">
+        <el-select
+          v-model="testplan.region"
+          placeholder="执行策略"
+          popper-class="popper-style"
+          style="width:100%"
+        >
+          <el-option label="出错后停止" value="stop"></el-option>
+          <el-option label="出错后继续执行" value="continue"></el-option>
+        </el-select>
+      </el-form-item>
       <div class="el-form-item-class">
         <el-form-item label="其他功能">
           <el-checkbox-group v-model="testplan.others">
@@ -73,7 +84,6 @@
           </el-checkbox-group>
         </el-form-item>
       </div>
-      <div class="div-beizhu">备注：保存服务器返回数据到本地会占用本地磁盘大量空间</div>
       <div class="el-form-item-class">
         <el-form-item>
           <div class="buttons-div">
@@ -100,7 +110,8 @@ export default {
         mode: "shunxu",//默认执行方式
         date: "",
         time: "",
-        log_level: "DEBUG",//默认日志级别
+        logLevel: "DEBUG",//默认日志级别
+        region: "stop",
         others: ["启动前自动保存"]
       },
       rules: {
@@ -112,7 +123,7 @@ export default {
     submitForm() {
       this.$refs["testplan"].validate(valid => {
         if (valid) {
-          this.$emit("submitOrCancel", "1"+this.testplan.name);
+          this.$emit("submitOrCancel", "1"+JSON.stringify(this.testplan));
         } else {
           return false;
         }
@@ -130,7 +141,8 @@ export default {
       this.mode = newValue.mode;
       this.date = newValue.date;
       this.time = newValue.time;
-      this.log_level = newValue.log_level;
+      this.logLevel = newValue.logLevel;
+      this.region = newValue.region;
       this.others = newValue.others;
     }
   }

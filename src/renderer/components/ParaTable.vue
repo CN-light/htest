@@ -3,7 +3,7 @@
     <div class="div-search">
       <div class="text-div">请求参数设置</div>
       <div class="div-options">
-        <el-input v-model="search" placeholder="关键字" class="special-input"/>
+        <el-input v-model="search" placeholder="关键字" class="special-input" />
         <el-button-group>
           <el-tooltip
             class="item"
@@ -54,14 +54,14 @@
         <el-table-column label="值">
           <template slot-scope="scope">
             <div>
-              <el-input size="small" v-model="scope.row.value"></el-input>
+              <el-input size="small" v-model="scope.row.value" @blur="update"></el-input>
             </div>
           </template>
         </el-table-column>
         <el-table-column label="编码">
           <template slot-scope="scope">
             <div>
-              <el-input size="small" v-model="scope.row.ecoding"></el-input>
+              <el-input size="small" v-model="scope.row.ecoding" @blur="update"></el-input>
             </div>
           </template>
         </el-table-column>
@@ -70,7 +70,6 @@
   </div>
 </template>
 <style src="../assets/css/table.css" scoped>
-
 </style>
 <script>
 //设置表格的index
@@ -80,20 +79,8 @@ export default {
   tindex: "",
   data() {
     return {
-      tableData: [
-        {
-          key: "2016-05-02",
-          value: "王小虎",
-          ecoding: "上海市普陀区金沙江路 1518 弄",
-          index: "1"
-        },
-        {
-          key: "2016-05-04",
-          value: "王小虎",
-          ecoding: "上海市普陀区金沙江路 1517 弄",
-          index: "2"
-        }
-      ],
+      id: "",
+      tableData: [],
       search: ""
     };
   },
@@ -133,6 +120,18 @@ export default {
     },
     openFile() {
       console.log("打开写有http请求参数的文件");
+    },
+    update() {
+      this.$emit("updateTableData", this.id + JSON.stringify(this.tableData).replace(/,\"index\":\d+/g, ""));
+    }
+  },
+  props: ["tabData"],
+  watch: {
+    tableData(newValue, oldValue) {
+      this.$emit("updateTableData", this.id + JSON.stringify(newValue).replace(/,\"index\":\d+/g, ""));
+    },
+    tabData(newValue, oldValue) {
+      this.tableData = newValue.tableData;
     }
   }
 };

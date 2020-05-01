@@ -65,8 +65,8 @@
       <div class="el-form-item-class">
         <el-form-item label="随机变量">
           <el-select v-model="request.random" placeholder="随机变量" popper-class="popper-style">
-            <el-option label="使用" value="used"></el-option>
-            <el-option label="不使用" value="unused"></el-option>
+            <el-option label="使用" value="use"></el-option>
+            <el-option label="不使用" value="unuse"></el-option>
           </el-select>
         </el-form-item>
       </div>
@@ -104,7 +104,7 @@ export default {
         path: "",
         method: "get",
         contentType: "",
-        random: "unused",
+        random: "unuse",
         rdata: ""
       },
       rules: {
@@ -117,9 +117,9 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           if (this.request.random == "used")
-            this.$emit("submitOrCancel", "51" + this.request.name);
+            this.$emit("submitOrCancel", "5" + JSON.stringify(this.request));
           else 
-            this.$emit("submitOrCancel", "52" + this.request.name);
+            this.$emit("submitOrCancel", "5" + JSON.stringify(this.request));
         } else {
           return false;
         }
@@ -142,6 +142,7 @@ export default {
       this.contentType = newValue.contentType;
       this.header = newValue.header;
       this.rdata = newValue.rdata;
+      this.random = newValue.random;
     }
   }
 };

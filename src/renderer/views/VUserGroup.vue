@@ -13,41 +13,38 @@
         </el-form-item>
       </div>
       <div class="el-form-item-class">
-        <el-form-item label="线程名称前缀">
+        <el-form-item label="名称前缀">
           <el-input v-model="vuser.prefix"></el-input>
         </el-form-item>
       </div>
       <div class="el-form-item-class">
         <div class="div-inputs">
-          <div style="width:33%">
+          <div style="width:50%">
             <el-form-item label="虚拟用户数">
               <el-input-number v-model="vuser.number" :min="1" :max="500" style="width:100%"></el-input-number>
             </el-form-item>
           </div>
-          <div style="width:34%">
-            <el-form-item label="间隔时间(秒)">
-              <el-input-number v-model="vuser.intervalTime" :min="0" style="width:100%"></el-input-number>
-            </el-form-item>
-          </div>
-          <div style="width:33%">
+          <div style="width:50%">
             <el-form-item label="循环次数">
               <el-input-number v-model="vuser.cycleCount" :min="1" style="width:100%"></el-input-number>
             </el-form-item>
           </div>
         </div>
       </div>
-      <el-form-item label="执行策略">
-        <el-select
-          v-model="vuser.region"
-          placeholder="执行策略"
-          popper-class="popper-style"
-          style="width:100%"
-        >
-          <el-option label="出错后停止当前用户组" value="stopnow"></el-option>
-          <el-option label="出错后停止全部用户组" value="stopall"></el-option>
-          <el-option label="出错后继续执行当前用户组" value="continuenow"></el-option>
-        </el-select>
-      </el-form-item>
+      <div class="el-form-item-class">
+        <div class="div-inputs">
+          <div style="width:50%">
+            <el-form-item label="间隔时间(ms)">
+              <el-input-number v-model="vuser.intervalTime" :min="0" style="width:100%"></el-input-number>
+            </el-form-item>
+          </div>
+           <div style="width:50%">
+            <el-form-item label="用户数增量">
+              <el-input-number v-model="vuser.increment" :min="0" :max="20" style="width:100%"></el-input-number>
+            </el-form-item>
+          </div>
+        </div>
+      </div>
       <el-form-item label="模式">
         <el-select
           v-model="vuser.mode"
@@ -59,7 +56,7 @@
           <el-option label="执行不同的请求" value="different"></el-option>
         </el-select>
       </el-form-item>
-      <div class="div-beizhu">备注：若选择执行不同的请求，则会对该用户组下的所有请求执行相同次数，即总次数/请求种类数；</div>
+      <div class="div-beizhu">备注：若选择执行相同的请求，则该节点下最多只能设置一个http请求。</div>
       <div class="el-form-item-class">
         <el-form-item>
           <div class="buttons-div">
@@ -85,9 +82,9 @@ export default {
         number: "",
         intervalTime: "",
         cycleCount: "",
+        increment: "",
         prefix: "",
-        mode: "different",
-        region: "stopnow"
+        mode: "different"
       },
       rules: {
         name: [{ required: true, message: "请输入名称", trigger: "blur" }]
@@ -98,22 +95,21 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          if(this.vuser.mode == "different")
-            this.$emit("submitOrCancel", "2"+this.vuser.name);
-          else
-            this.$emit("submitOrCancel", "7"+this.vuser.name);
+          if (this.vuser.mode == "different")
+            this.$emit("submitOrCancel", "2" + JSON.stringify(this.vuser));
+          else this.$emit("submitOrCancel", "7" + JSON.stringify(this.vuser));
         } else {
           return false;
         }
       });
     },
-    cancelForm(e){
+    cancelForm(e) {
       this.$emit("submitOrCancel", "0");
     }
   },
-  props:["dialogData"],
-  watch:{
-    dialogData(newValue, oldValue){
+  props: ["dialogData"],
+  watch: {
+    dialogData(newValue, oldValue) {
       this.name = newValue.name;
       this.desc = newValue.desc;
       this.number = newValue.number;
@@ -121,7 +117,7 @@ export default {
       this.cycleCount = newValue.cycleCount;
       this.prefix = newValue.prefix;
       this.mode = newValue.mode;
-      this.region = newValue.region;
+      this.increment = newValue.increment;
     }
   }
 };

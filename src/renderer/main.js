@@ -15,7 +15,9 @@ new customTitlebar.Titlebar({
     backgroundColor: customTitlebar.Color.fromHex('#252526'),
     itemBackgroundColor:customTitlebar.Color.fromHex('#094771'),
     unfocusEffect:true,
-    icon:"/static/logo.ico"
+    // icon:require('path').join(__dirname, '/assets/logo.ico').replace(/\\/g, '\\\\')
+    // icon:require('./assets/light_logo.png')
+    icon:__static+"/logo.ico"
 });
 
 /* eslint-disable no-new */

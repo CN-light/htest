@@ -46,14 +46,14 @@
         <el-table-column label="名称">
           <template slot-scope="scope">
             <div>
-              <el-input size="small" v-model="scope.row.key"></el-input>
+              <el-input size="small" v-model="scope.row.key" @blur="update"></el-input>
             </div>
           </template>
         </el-table-column>
         <el-table-column label="值">
           <template slot-scope="scope">
             <div>
-              <el-input size="small" v-model="scope.row.value"></el-input>
+              <el-input size="small" v-model="scope.row.value" @blur="update"></el-input>
             </div>
           </template>
         </el-table-column>
@@ -62,7 +62,6 @@
   </div>
 </template>
 <style src="../assets/css/table.css" scoped>
-
 </style>
 <script>
 //设置表格的index
@@ -72,18 +71,8 @@ export default {
   tindex: "",
   data() {
     return {
-      tableData: [
-        {
-          key: "2016-05-02",
-          value: "王小虎",
-          index: "1"
-        },
-        {
-          key: "2016-05-04",
-          value: "王小虎",
-          index: "2"
-        }
-      ],
+      id: "",
+      tableData: [],
       search: ""
     };
   },
@@ -122,6 +111,18 @@ export default {
     },
     openFile() {
       console.log("打开写有http头部参数的文件");
+    },
+    update(){
+      this.$emit("updateTableData", this.id + JSON.stringify(this.tableData).replace(/,\"index\":\d+/g, ""));
+    }
+  },
+  props: ["tabData"],
+  watch: {
+    tableData(newValue, oldValue) {
+      this.$emit("updateTableData", this.id + JSON.stringify(newValue).replace(/,\"index\":\d+/g, ""));
+    },
+    tabData(newValue, oldValue) {
+      this.tableData = newValue.tableData;
     }
   }
 };
