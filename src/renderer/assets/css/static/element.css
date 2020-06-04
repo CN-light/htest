@@ -312,7 +312,7 @@
     padding-right: 2%;
     padding-left: 2%;
     width: 850px;
-    height: 588px;
+    height: 615px;
     overflow: hidden;
 }
 
@@ -349,12 +349,12 @@
 
 ::-webkit-scrollbar-thumb {
     border-radius: 5px;
-    background-color: #1e1e1e;
+    background-color: #4f4f4f;
 }
 
 ::-webkit-scrollbar-thumb:hover {
     border-radius: 5px;
-    background-color: #515151;
+    background-color: #aaaaaa;
 }
 
 /* iconfont通用样式 */

@@ -9,7 +9,12 @@
       </div>
       <div class="el-form-item-class">
         <el-form-item label="备注">
-          <el-input type="textarea" v-model="testplan.desc" class="log"></el-input>
+          <el-input type="textarea" v-model="testplan.desc" class="log" resize="none" :rows="1"></el-input>
+        </el-form-item>
+      </div>
+      <div class="el-form-item-class">
+        <el-form-item label="监听程序" prop="serverIp">
+          <el-input v-model="testplan.serverIp"></el-input>
         </el-form-item>
       </div>
       <div class="el-form-item-class">
@@ -79,7 +84,6 @@
           <el-checkbox-group v-model="testplan.others">
             <div class="checkbox-div">
               <el-checkbox label="保存服务器返回数据到本地" name="type"></el-checkbox>
-              <el-checkbox label="启动前自动保存" name="type"></el-checkbox>
             </div>
           </el-checkbox-group>
         </el-form-item>
@@ -107,15 +111,17 @@ export default {
       testplan: {
         name: "",
         desc: "",
+        serverIp: "",
         mode: "shunxu",//默认执行方式
         date: "",
         time: "",
         logLevel: "DEBUG",//默认日志级别
         region: "stop",
-        others: ["启动前自动保存"]
+        others: []
       },
       rules: {
-        name: [{ required: true, message: "请输入名称", trigger: "blur" }]
+        name: [{ required: true, message: "请输入名称", trigger: "blur" }],
+        serverIp:[{ required: true, message: "请输入监听程序ip", trigger: "blur" }]
       }
     };
   },
@@ -131,19 +137,6 @@ export default {
     },
     cancelForm(e){
       this.$emit("submitOrCancel", "0");
-    }
-  },
-  props:["dialogData"],
-  watch:{
-    dialogData(newValue, oldValue){
-      this.name = newValue.name;
-      this.desc = newValue.desc;
-      this.mode = newValue.mode;
-      this.date = newValue.date;
-      this.time = newValue.time;
-      this.logLevel = newValue.logLevel;
-      this.region = newValue.region;
-      this.others = newValue.others;
     }
   }
 };

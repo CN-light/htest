@@ -9,7 +9,7 @@
       </div>
       <div class="el-form-item-class">
         <el-form-item label="备注">
-          <el-input type="textarea" v-model="vuser.desc"></el-input>
+          <el-input type="textarea" v-model="vuser.desc" resize="none"></el-input>
         </el-form-item>
       </div>
       <div class="el-form-item-class">
@@ -105,19 +105,6 @@ export default {
     },
     cancelForm(e) {
       this.$emit("submitOrCancel", "0");
-    }
-  },
-  props: ["dialogData"],
-  watch: {
-    dialogData(newValue, oldValue) {
-      this.name = newValue.name;
-      this.desc = newValue.desc;
-      this.number = newValue.number;
-      this.intervalTime = newValue.intervalTime;
-      this.cycleCount = newValue.cycleCount;
-      this.prefix = newValue.prefix;
-      this.mode = newValue.mode;
-      this.increment = newValue.increment;
     }
   }
 };

@@ -8,7 +8,7 @@
       </div>
       <div class="el-form-item-class">
         <el-form-item label="备注" :rows="1">
-          <el-input type="textarea" v-model="request.desc"></el-input>
+          <el-input type="textarea" v-model="request.desc" resize="none"></el-input>
         </el-form-item>
       </div>
       <div class="el-form-item-class">
@@ -21,7 +21,7 @@
             </el-form-item>
           </div>
           <div style="width:50%">
-            <el-form-item label="服务器ip/名称">
+            <el-form-item label="服务器ip" prop="ip">
               <el-input v-model="request.ip"></el-input>
             </el-form-item>
           </div>
@@ -72,7 +72,7 @@
       </div>
       <div class="el-form-item-class">
         <el-form-item label="请求数据体">
-          <el-input type="textarea" v-model="request.rdata" :rows="4"></el-input>
+          <el-input type="textarea" v-model="request.rdata" :rows="4" resize="none"></el-input>
         </el-form-item>
       </div>
       <div class="div-beizhu">备注：在http头部参数表中可以自己定义请求头部；若在此节点下配置参数表，则全局参数表不生效。</div>
@@ -108,7 +108,8 @@ export default {
         rdata: ""
       },
       rules: {
-        name: [{ required: true, message: "请输入名称", trigger: "blur" }]
+        name: [{ required: true, message: "请输入名称", trigger: "blur" }],
+        ip: [{ required: true, message: "请输入ip", trigger: "blur" }]
       }
     };
   },
@@ -127,22 +128,6 @@ export default {
     },
     cancelForm(e) {
       this.$emit("submitOrCancel", "0");
-    }
-  },
-  props: ["dialogData"],
-  watch: {
-    dialogData(newValue, oldValue) {
-      this.name = newValue.name;
-      this.desc = newValue.desc;
-      this.ip = newValue.ip;
-      this.protocol = newValue.protocol;
-      this.port = newValue.port;
-      this.path = newValue.path;
-      this.method = newValue.method;
-      this.contentType = newValue.contentType;
-      this.header = newValue.header;
-      this.rdata = newValue.rdata;
-      this.random = newValue.random;
     }
   }
 };

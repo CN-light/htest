@@ -1,18 +1,17 @@
 <template>
   <div
-    id="echart"
+    id="echarts"
     style="width:90%; height:81%;padding:6% 5%;display:flex;justify-content: center;"
   ></div>
 </template>
 <script>
 import echarts from "echarts";
 export default {
-  name: "ServerStatue",
+  name: "ResponseTime",
   data() {
     return {
-      xdata:[],
-      memory: [],
-      disk: []
+      xdata: [],
+      ydata: []
     };
   },
   mounted() {
@@ -20,15 +19,15 @@ export default {
   },
   methods: {
     draw() {
-      let echart = this.$echarts.init(
-        document.getElementById("echart"),
+      let echarts = this.$echarts.init(
+        document.getElementById("echarts"),
         "dark"
       );
-      window.onresize = echart.onresize;
+      window.onresize = echarts.onresize;
       // 绘制图表
       var option = {
         title: {
-          text: "服务器性能监测",
+          text: "响应时间",
           textAlign: "center",
           left: "50%",
           top: "2%",
@@ -39,39 +38,33 @@ export default {
           trigger: "item"
         },
         legend: {
-          data: ["内存使用率", "磁盘使用率"],
+          data: ["响应时间"],
           left: "auto",
           top: "3%",
           right: "10%",
           bottom: "auto"
         },
         xAxis: {
-          name: "ms",
+          name: "请求序列",
           nameLocation: "end",
           type: "category",
           data: this.xdata
         },
         yAxis: {
-          name: "%",
+          name: "响应时间(ms)",
           nameLocation: "end",
           type: "value"
         },
         series: [
           {
-            name: "内存使用率",
-            data: this.memory,
-            type: "line",
-            smooth: true
-          },
-          {
-            name: "磁盘使用率",
-            data: this.disk,
+            name: "响应时间",
+            data: this.ydata,
             type: "line",
             smooth: true
           }
         ]
       };
-      echart.setOption(option);
+      echarts.setOption(option);
     }
   },
   props: ["tabData"],
@@ -80,10 +73,9 @@ export default {
       handler(newValue, oldValue) {
         if (newValue != undefined && newValue != "") {
           var obj = JSON.parse(newValue);
-          if (obj.id == "0000006") {
-            this.xdata = obj.serverStatue.xdata;
-            this.memory = obj.serverStatue.memory;
-            this.disk = obj.serverStatue.disk;
+          if (obj.id == "0000003") {
+            this.xdata = obj.time.xdata;
+            this.ydata = obj.time.ydata;
           }
         }
       },

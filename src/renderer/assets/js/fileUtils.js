@@ -10,6 +10,7 @@ const fileUtils = {
         //树的根节点是否符合要求
         var treeData = obj.start.data[0];
         if (treeData.id != "1100001" || treeData.label == "" || treeData.label == undefined || treeData.children == undefined) {
+            console.log(treeData.id)
             return 2;
         }
         //根节点的信息是否符合要求
@@ -20,11 +21,18 @@ const fileUtils = {
         if (testPlan.mode != "jiaya" && testPlan.mode != "dingshi" && testPlan.mode != "shunxu") {
             return 4;
         }
-        if (!(/\d{4}-\d{2}-\d{2}/.test(testPlan.date))) {
-            return 5;
+        if (testPlan.serverIp == "" || testPlan.serverIp == undefined) {
+            return 65;
         }
-        if (!(/\d{2}:\d{2}:\d{2}/.test(testPlan.time))) {
-            return 6;
+        if (testPlan.date == "dingshi") {
+            if (!(/\d{4}-\d{2}-\d{2}/.test(testPlan.date))) {
+                return 5;
+            }
+        }
+        if (testPlan.time == "dingshi") {
+            if (!(/\d{2}:\d{2}:\d{2}/.test(testPlan.time))) {
+                return 6;
+            }
         }
         if (testPlan.logLevel != "ERROR" && testPlan.logLevel != "INFO" && testPlan.logLevel != "DEBUG"
             && testPlan.logLevel != "ALL" && testPlan.logLevel != "OFF" && testPlan.logLevel != "TRACE"
@@ -103,7 +111,7 @@ const fileUtils = {
                                             if (requests[l].name != children2[k].label) {
                                                 return 22;
                                             }
-                                            if (!/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/.test(requests[l].ip)) {
+                                            if (requests[l].ip == "" || requests[l].ip == undefined) {
                                                 return 23;
                                             }
                                             if (requests[l].protocol != "http") {
@@ -113,7 +121,6 @@ const fileUtils = {
                                                 return 25;
                                             }
                                             if (requests[l].port != "" && !/\d+/.test(requests[l].port)) {
-                                                console.log("port")
                                                 return 26;
                                             }
                                             if (requests[l].path == undefined) {
@@ -136,42 +143,13 @@ const fileUtils = {
                                             if (requests[l].rdata == undefined) {
                                                 return 32;
                                             }
-                                            //检查assert
                                             if (children2[k].children == undefined) {
                                                 return 33;
                                             }
                                             if (children2[k].children.length > 0) {
                                                 let children3 = children2[k].children;
                                                 for (let m = 0; m < children3.length; m++) {
-                                                    if (children3[m].id.substring(0, 1) == "6") {
-                                                        var aflag = false;
-                                                        let asserts = obj.assert;
-                                                        if (asserts == undefined) {
-                                                            return 34;
-                                                        }
-                                                        for (let n = 0; n < asserts.length; n++) {
-                                                            //存在此assert记录的数据
-                                                            if (asserts[n].id == children3[m].id) {
-                                                                aflag = true;
-                                                                //检查此assert
-                                                                if (children3[m].label != asserts[n].name) {
-                                                                    return 35;
-                                                                }
-                                                                if (asserts[n].field != "status" && asserts[n].field != "header" && asserts[n] != "body") {
-                                                                    return 36;
-                                                                }
-                                                                if (asserts[n].rule != "equal" && asserts[n].rule != "include" && asserts[n].rule != "match") {
-                                                                    return 37;
-                                                                }
-                                                                if (asserts[n].failmsg == undefined) {
-                                                                    return 38;
-                                                                }
-                                                            }
-                                                        }
-                                                        if (!aflag) {
-                                                            return 39;
-                                                        }
-                                                    } else if (children3[m].id.substring(0, 1) == "3") {
+                                                    if (children3[m].id.substring(0, 1) == "3") {
                                                         let para = obj.paraTable;
                                                         let pflag = false;
                                                         if (para == undefined) {
@@ -313,27 +291,44 @@ const fileUtils = {
     },
     // 检查写有http请求参数的文件是否符合要求
     httpParaFileCheck: function (fileText) {
-
+        var t = fileText.replace(/[\r\n]/g, "").replace(/[\{\}\[\]]/g, "").replace(/[ \t]/g, "")+",";
+        if(/("key":"[a-zA-Z0-9_\-]*","value":"[a-zA-Z0-9_\-]*","ecoding":"[a-zA-Z0-9_\-]*",)*/.test(fileText)){
+            return true;
+        }
+        return false;
     },
     // 检查写有http请求头部参数的文件是否符合要求
     httpHeaderFileCheck: function (fileText) {
-
+        var t = fileText.replace(/[\r\n]/g, "").replace(/[\{\}\[\]]/g, "").replace(/[ \t]/g, "")+",";
+        if(/("key":"[a-zA-Z0-9_\-]*","value":"[a-zA-Z0-9_\-]*",)*/.test(fileText)){
+            return true;
+        }
+        return false;
     },
     // 检查写有随机变量的文件是否符合要求
     randomFileCheck: function (fileText) {
-
+        var t = fileText.replace(/[\r\n]/g, "").replace(/[\{\}\[\]]/g, "").replace(/[ \t]/g, "").replace(/[\"value:]/g,"")+",";
+        if(/(.+,)+/.test(fileText)){
+            return true;
+        }
+        return false;
     },
     // 将指定信息保存到指定文件
     fileSave: function (fileText, path) {
-        fs.writeFile(path, fileText,function(err) {
+        fs.writeFile(path, fileText, function (err) {
             if (err) {
                 return console.error(err);
-            }});
+            }
+        });
     },
     // 读取指定文件，返回json对象
     fileRead: function (path) {
         var data = fs.readFileSync(path);
-        if(this.planFileCheck(data) == 0){
+        return data.toString();
+    },
+    planFileRead: function (path) {
+        var data = fs.readFileSync(path);
+        if (this.planFileCheck(data) == 0) {
             return JSON.parse(data);
         }
         return undefined;

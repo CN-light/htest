@@ -1,0 +1,23 @@
+2020-06-04 01:41:27 INFO [   main] Start -- 70: 开始测试
+2020-06-04 01:41:27 INFO [   main] Start -- 71: 总共1个请求
+2020-06-04 01:41:30 ERROR [   main] Start -- 95: 无法连接至服务器监测程序：a
+2020-06-04 01:41:30 INFO [   main] task.RequestTask -- 48: 线程池启动
+2020-06-04 01:41:30 INFO [   pool-1-thread-1] thread.MethodThread -- 35: b-c-1-1开始
+2020-06-04 01:41:30 DEBUG [   pool-1-thread-1] org.apache.http.client.protocol.ResponseProcessCookies -- 119: Cookie accepted [BAIDUID="108578FF33956A47085F6FC2BF57DABC:FG=1", version:0, domain:baidu.com, path:/, expiry:Fri Jun 04 01:41:31 CST 2021]
+2020-06-04 01:41:30 INFO [   pool-1-thread-1] thread.MethodThread -- 81: 
+请求：b-c-1-1
+响应：
+响应头：
+Content-Type: application/json
+Date: Wed, 03 Jun 2020 17:41:31 GMT
+P3p: CP=" OTI DSP COR IVA OUR IND COM "
+Server: Apache
+Set-Cookie: BAIDUID=108578FF33956A47085F6FC2BF57DABC:FG=1; expires=Thu, 03-Jun-21 17:41:31 GMT; max-age=31536000; path=/; domain=.baidu.com; version=1
+Tracecode: 24916251920192895498060401
+Content-Length: 54
+响应时间：130
+响应体：
+{"error_code":"52003","error_msg":"UNAUTHORIZED USER"}
+
+2020-06-04 01:41:30 INFO [   pool-1-thread-1] thread.MethodThread -- 85: b-c-1-1结束
+2020-06-04 01:41:30 INFO [   pool-1-thread-1] thread.RequestThreadPool -- 29: 线程池退出

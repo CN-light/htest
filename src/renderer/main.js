@@ -4,11 +4,13 @@ import Vue from 'vue'
 import App from './App'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
-import router from './router'
+import router from './router';
+import echarts from 'echarts'
 import menu from './menu'
+Vue.prototype.$echarts = echarts
 Vue.use(ElementUI);
-Vue.config.productionTip = false
 
+Vue.config.productionTip = false
 const customTitlebar = require('custom-electron-titlebar');
  
 new customTitlebar.Titlebar({
@@ -16,7 +18,6 @@ new customTitlebar.Titlebar({
     itemBackgroundColor:customTitlebar.Color.fromHex('#094771'),
     unfocusEffect:true,
     // icon:require('path').join(__dirname, '/assets/logo.ico').replace(/\\/g, '\\\\')
-    // icon:require('./assets/light_logo.png')
     icon:__static+"/logo.ico"
 });
 

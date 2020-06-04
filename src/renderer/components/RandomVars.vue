@@ -56,6 +56,8 @@
 <style src="../assets/css/table.css" scoped>
 </style>
 <script>
+const { dialog, app } = require("electron").remote;
+import utils from "../assets/js/fileUtils.js";
 //设置表格的index
 let staticindex = 1;
 export default {
@@ -101,19 +103,65 @@ export default {
       if (val != null) this.tindex = val.index;
     },
     openFile() {
-      console.log("打开写有随机变量的文件");
+      dialog.showOpenDialog(
+        { filters: [{ name: "JSON", extensions: ["json"] }] },
+        event => {
+          if (event != undefined) {
+            var string = utils.fileRead(event[0]);
+            if (utils.randomFileCheck(string)) {
+              var obj = JSON.parse(string);
+              for(let i = 0; i < obj.length; i++){
+                this.tableData.push(obj[i]);
+              }
+            } else {
+              const options = {
+                type: "error",
+                title: app.getName(),
+                message: "文件格式不正确，无法识别"
+              };
+              dialog.showMessageBox(options);
+            }
+          }
+        }
+      );
     },
-    update(){
-      this.$emit("updateTableData", this.id + JSON.stringify(this.tableData).replace(/,\"index\":\d+/g, ""));
+    update() {
+      let t = {
+        id: this.id,
+        tableData: this.tableData
+      };
+      this.$emit(
+        "updateTableData",
+        JSON.stringify(t).replace(/,\"index\":\d+/g, "")
+      );
     }
   },
   props: ["tabData"],
   watch: {
     tableData(newValue, oldValue) {
-      this.$emit("updateTableData", this.id + JSON.stringify(newValue).replace(/,\"index\":\d+/g, ""));
+      let t = {
+        id: this.id,
+        tableData: this.tableData
+      };
+      this.$emit(
+        "updateTableData",
+        JSON.stringify(t).replace(/,\"index\":\d+/g, "")
+      );
     },
-    tabData(newValue, oldValue) {
-      this.tableData = newValue.tableData;
+    tabData: {
+      handler(newValue, oldValue) {
+        if (newValue != undefined && newValue != "") {
+          var obj = JSON.parse(newValue);
+          if (this.id == "") {
+            this.id = obj.id;
+            if (this.para != undefined) this.tableData = obj.vars.tableData;
+          } else if (this.id == obj.id) {
+            if (this.para != undefined) this.tableData = obj.vars.tableData;
+          }
+        }
+      },
+      deep: true,
+      immediate: true
     }
   }
 };
